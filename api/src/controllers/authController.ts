@@ -5,24 +5,29 @@ import { Request, Response } from "express";
 import { userFunctions } from "../services/user";
 
 dotenv.config();
-
 const SECRET = process.env.SECRET;
 
 export const login = async (req: Request, res: Response) => {
-    const data: {name: string, email: string} = { name: req.body.name, email: req.body.email };
+    const data: {email: string, password: string} = {email: req.body.email, password: req.body.password};
 
     try {
         const user = await userFunctions.user.findFirstOrThrow({
             where: {
-                name: data.name,
                 email: data.email
             }
         })
 
-        //ver questão do password
+        const validate = bycript.compareSync(data.password, user.password);
+        if(!validate){
+            throw Error("Senha incorreta!")
+        }
+
+        const token = jwt.sign({id: user.id}, SECRET as string);
+
+        res.json({"Usuário Logado com sucesso!": {"token": token}})
     }
     catch (err: any) {
-        res.send(err.name);
+        res.send(err.message);
     }
 
 }
