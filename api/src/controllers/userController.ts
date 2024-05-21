@@ -17,8 +17,46 @@ export const register = async (req: Request, res: Response) => {
         if (err instanceof z.ZodError) {
             res.send(err.issues[0].message);
         }
-        else{
+        else {
             res.send(`Erro no campo ${err.meta.target}`)
+        }
+    }
+}
+
+export const deleteAccount = async (req: Request, res: Response) => {
+    try {
+        const param: string = req.params.id;
+        const id: number = parseInt(param);
+        
+        if(isNaN(id)){
+            throw Error("ID inválido")
+        }
+        
+        const user = await userFunctions.user.findUnique({
+            where: {
+                id: id
+            },
+        })
+
+        if(user){
+            const result = await userFunctions.user.delete({
+                where: {
+                    id: user.id
+                },
+            })
+
+            return res.send(result);
+        }
+
+        return res.send("Usuário inexistente");
+        
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
         }
     }
 }
