@@ -4,11 +4,11 @@ import React from 'react'
 
 const Info = () => {
     const githubHandler = () => {
-        document.location.href = 'https://github.com/danielmsdiaz';
+        window.open("https://github.com/danielmsdiaz", '_blank');
     }
 
     const linkedinHandler = () => {
-        document.location.href = 'https://www.linkedin.com/in/danielmsdiaz/';
+        window.open("https://www.linkedin.com/in/danielmsdiaz/", '_blank');
     }
 
     return (
