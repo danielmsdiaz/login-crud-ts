@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
 // import Form from '@/components/Form'
 import Title from '@/components/Title'
 import Input from '@/components/Input'
@@ -9,21 +10,52 @@ import Button from '@/components/Button'
 import Info from '@/components/Info'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import SignInForm from '@/types/SignInForm'
+import apiService from '@/services/userServices'
+import { login} from '@/libs'
 
-type userData = {
-    email: string,
-    password: string
-}
+const Login = () => {
+    const { handleSubmit, control, formState: { errors } } = useForm<SignInForm>();
+    const [showAlert, setShowAlert] = useState(false);
+    const router = useRouter();
 
-const Home = () => {
-    const { handleSubmit, control } = useForm<SignInForm>();
-    const [userData, setUserData] = useState<userData>();
-    const handleFormSubmit: SubmitHandler<SignInForm> = (data) => {
-        setUserData({email: data.email, password: data.password});
+    const handleFormSubmit: SubmitHandler<SignInForm> = async (data) => {
+        const res = await apiService.postData("auth/login", { email: data.email, password: data.password });
+        if(res == "Senha incorreta!"){
+            setShowAlert(true);
+            return;
+        }
+
+        login(res.token);
+        router.push("/dashboard")
     }
 
+    useEffect(() => {
+        if (showAlert) {
+            const timer = setTimeout(() => {
+                setShowAlert(false);
+            }, 2000); // 2 seconds
+
+            // Cleanup timeout if component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [showAlert]);
+
     return (
-        <section className="dark:bg-gray-900 flex h-screen">
+        <section className="dark:bg-gray-900 flex h-screen relative">
+            {showAlert && (
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-50 max-w-md">
+                    <div className="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                        <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span className="sr-only">Erro</span>
+                        <div>
+                            <span className="font-medium">Senha incorreta!</span> 
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className='flex items-center justify-center w-1/2 bg-white'>
                 <div className='w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700'>
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -31,15 +63,22 @@ const Home = () => {
                         <form className="md:space-y-6" onSubmit={handleSubmit(handleFormSubmit)} action="">
                             <div className='space-y-4 md:space-y-2'>
                                 <Label>Email:</Label>
-                                <Input defaultValue="" placeHolder="name@company.com" control={control} name="name" rules={{ required: true }} />
+                                <Input defaultValue="" placeHolder="name@company.com" control={control} name="email" rules={{ required: "Email inválido" }} />
+                                {errors.email && <span className='text-red-500 text-sm'>{errors.email.message}</span>}
                             </div>
                             <div className='space-y-4 md:space-y-2'>
                                 <Label>Senha:</Label>
-                                <Input defaultValue="" placeHolder="••••••••" control={control} name="password" rules={{ required: true}} />
+                                <Input defaultValue="" placeHolder="••••••••" control={control} name="password" rules={{ required: "Senha inválida", minLength: 8 }} />
+                                {errors.password && errors.password.type === "required" && (
+                                    <span className='text-red-500 text-sm' role="alert">{errors.password.message}</span>
+                                )}
+                                {errors.password && errors.password.type === "minLength" && (
+                                    <span className='text-red-500 text-sm' role="alert">Tamanho inválido</span>
+                                )}
                             </div>
                             <Button>Entrar</Button>
                             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                                Não possui conta? <a href="#" className="font-medium text-indigo-600 hover:underline dark:text-indigo-600">Inscreva-se</a>
+                                Não possui conta? <a href="register" className="font-medium text-indigo-600 hover:underline dark:text-indigo-600">Inscreva-se</a>
                             </p>
                             <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300 dark:before:border-neutral-500 dark:after:border-neutral-500">
                                 <p className="mx-4 mb-0 text-center font-semibold dark:text-neutral-200">OU</p>
@@ -91,8 +130,7 @@ const Home = () => {
                 </div>
             </div>
         </section>
-
     )
 }
 
-export default Home
+export default Login

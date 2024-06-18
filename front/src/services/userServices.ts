@@ -6,17 +6,19 @@ const api = axios.create({
 });
 
 const apiService = {
-    getData: async (endpoint: string) => {
-      try {
-        const response = await api.get(endpoint);
-        return response.data;
-      } catch (error) {
-        console.error('Erro ao fazer requisição GET:', error);
-        throw error;
-      }
-    },
+    // getData: async (endpoint: string, data: {email: string, password: string}) => {
+    //   try {
+    //     const response = await api.get(endpoint, {
+    //       params: data
+    //     });
+    //     return response.data;
+    //   } catch (error) {
+    //     console.error('Erro ao fazer requisição GET:', error);
+    //     throw error;
+    //   }
+    // },
 
-    postData: async (endpoint: string, data: {name: string, email: string, password: string}) => {
+    postData: async (endpoint: string, data: {name?: string, email: string, password: string}) => {
       try {
         const response = await api.post(endpoint, data);
         return response.data;
