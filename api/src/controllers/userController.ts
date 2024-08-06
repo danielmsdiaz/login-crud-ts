@@ -7,7 +7,6 @@ import bycript from "bcrypt"
 
 export const register = async (req: Request, res: Response) => {
     let data: PrismaClient.UserCreateInput = { name: req.body.name, email: req.body.email, password: req.body.password };
-
     try {
         const hashedPassword = await bycript.hash(data.password, 10);
         data.password = hashedPassword;      
@@ -23,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
             res.send(err.issues[0].message);
         }
         else {
-            res.send(err)
+            res.status(400).send(err)
         }
     }
 }

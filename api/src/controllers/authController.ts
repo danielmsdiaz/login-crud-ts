@@ -9,7 +9,7 @@ const SECRET = process.env.SECRET;
 
 export const login = async (req: Request, res: Response) => {
     const data: {email: string, password: string} = {email: req.body.email, password: req.body.password};
-
+   
     try {
         const user = await userFunctions.user.findFirstOrThrow({
             where: {
@@ -24,7 +24,7 @@ export const login = async (req: Request, res: Response) => {
 
         const token = jwt.sign({id: user.id}, SECRET as string);
 
-        res.json({"Usuário Logado com sucesso!": {"token": token}})
+        res.json({"token": token, "message": "Usuário logado com sucesso!"})
     }
     catch (err: any) {
         res.send(err.message);

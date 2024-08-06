@@ -8,6 +8,7 @@ import Button from '@/components/Button';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import SignInForm from '@/types/SignInForm';
 import apiService from '@/services/userServices';
+import { useRouter } from 'next/navigation';
 
 type userData = {
     email: string,
@@ -16,13 +17,17 @@ type userData = {
 };
 
 const Register = () => {
+    const router = useRouter();
     const { handleSubmit, control, formState: { errors }, watch } = useForm<SignInForm>();
     const [userData, setUserData] = useState<userData>();
     
-    const handleFormSubmit: SubmitHandler<SignInForm> = (data) => {
+    const handleFormSubmit: SubmitHandler<SignInForm> =  async (data) => {
         setUserData({ name: data.name, email: data.email, password: data.password });
-        const res = apiService.postData("register", data);
-        console.log(res);
+        const res = await apiService.postData("register", data);
+        if(res.User.status){
+            alert("Usuário criado com sucesso")
+            router.push("/")
+        }
     };
 
     return (
