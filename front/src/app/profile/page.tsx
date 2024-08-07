@@ -1,7 +1,7 @@
 import Header from '@/components/Header'
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 
-export default function Example() {
+export default function Profile() {
     return (
         <>
             {/*
