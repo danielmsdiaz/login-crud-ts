@@ -63,17 +63,26 @@ const Personals = () => {
 
     const handleFilterChange = (filterId: PersonalFilters.FilterType, value: string) => {
         setSelectedFilters(prev => {
-            const currentFilters = prev[filterId];
-            const isChecked = currentFilters.includes(value);
-
-            return {
-                ...prev,
-                [filterId]: isChecked
-                    ? currentFilters.filter(v => v !== value)
-                    : [...currentFilters, value],
-            };
+            if (filterId === 'rating') {
+                // Se a categoria é 'rating', desmarque se já estiver marcado
+                return {
+                    ...prev,
+                    rating: prev.rating.includes(value) ? [] : [value],  // Se o valor estiver marcado, desmarque-o
+                };
+            } else {
+                const currentFilters = prev[filterId];
+                const isChecked = currentFilters.includes(value);
+    
+                return {
+                    ...prev,
+                    [filterId]: isChecked
+                        ? currentFilters.filter(v => v !== value)
+                        : [...currentFilters, value],
+                };
+            }
         });
-    }
+    };
+    
 
     const filterPersonalTrainers = () => {
         const filtered = personalTrainers.filter(trainer => {

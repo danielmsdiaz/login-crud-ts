@@ -1,0 +1,13 @@
+export const navigation = [
+    { name: 'Dashboard', href: 'dashboard', current: true },
+    { name: 'Personais', href: 'personals', current: false },
+    { name: 'Projects', href: '#', current: false },
+    { name: 'Calendar', href: '#', current: false },
+    { name: 'Reports', href: '#', current: false },
+];
+
+export const userNavigation = [
+    { name: 'Your Profile', href: 'profile' },
+    { name: 'Settings', href: '#' },
+    { name: 'Sign out', href: '/' },
+];
