@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
-import { Prisma as PrismaClient } from "@prisma/client";
+import { Prisma, Prisma as PrismaClient } from "@prisma/client";
 import { userFunctions } from "../services/user";
 import { z } from "zod"
 import bycript from "bcrypt"
 
 
 export const register = async (req: Request, res: Response) => {
-    let data: PrismaClient.UserCreateInput = { name: req.body.name, email: req.body.email, password: req.body.password };
+    let data: PrismaClient.UserCreateInput = { name: req.body.name, email: req.body.email, password: req.body.password, type: req.body.userType };
+    
     try {
         const hashedPassword = await bycript.hash(data.password, 10);
         data.password = hashedPassword;      
@@ -14,7 +15,7 @@ export const register = async (req: Request, res: Response) => {
         const user = await userFunctions.user.create({
             data
         })
-
+        
         res.status(201).json({ "User": user });
     }
     catch (err: any) {

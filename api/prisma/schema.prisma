@@ -8,13 +8,49 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String 
-  status Boolean @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  
+  id          Int        @id @default(autoincrement())
+  name        String
+  email       String     @unique
+  password    String
+  status      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
+  type        Int        
+  cpf         String?    @unique
+  cep         String?
+  logradouro  String?
+  cidade      String?
+  estado      String?
+  pais        String?
+  photoUrl    String?
+  treinos     Treino[]   // Relação com Treino
+  contratosAsAluno Contrato[] @relation("AlunoContratos") // Relacionamento como Aluno
+  contratosAsPersonal Contrato[] @relation("PersonalContratos") // Relacionamento como Personal
+
   @@map("users")
+}
+
+model Treino {
+  id          Int      @id @default(autoincrement())
+  title       String   // Título ou nome do treino
+  description String?  // Descrição opcional do treino
+  exercises   Json     // Lista de exercícios em formato JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  personalId  Int      // Referência ao personal que criou o treino
+  personal    User     @relation(fields: [personalId], references: [id])
+
+  @@map("treinos")
+}
+
+model Contrato {
+  id         Int      @id @default(autoincrement())
+  alunoId    Int      // ID do Aluno
+  personalId Int      // ID do Personal
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  aluno     User     @relation("AlunoContratos", fields: [alunoId], references: [id])
+  personal   User     @relation("PersonalContratos", fields: [personalId], references: [id])
+
+  @@map("contratos")
 }

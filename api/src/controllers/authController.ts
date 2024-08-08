@@ -16,14 +16,15 @@ export const login = async (req: Request, res: Response) => {
                 email: data.email
             }
         })
-
+        
         const validate = bycript.compareSync(data.password, user.password);
+        
         if(!validate){
             throw Error("Senha incorreta!")
         }
 
-        const token = jwt.sign({id: user.id}, SECRET as string);
-
+        const token = jwt.sign({id: user.id, type: user.type}, SECRET as string);
+        
         res.json({"token": token, "message": "Usuário logado com sucesso!"})
     }
     catch (err: any) {

@@ -6,6 +6,14 @@ export const navigation = [
     { name: 'Reports', href: '#', current: false },
 ];
 
+export const personalNavigation = [
+    { name: 'Dashboard', href: 'dashboard', current: true },
+    { name: 'Treinos', href: 'teste', current: false },
+    { name: 'Projects', href: '#', current: false },
+    { name: 'Calendar', href: '#', current: false },
+    { name: 'Reports', href: '#', current: false },
+];
+
 export const userNavigation = [
     { name: 'Your Profile', href: 'profile' },
     { name: 'Settings', href: '#' },

@@ -20,11 +20,12 @@ const Login = () => {
 
     const handleFormSubmit: SubmitHandler<SignInForm> = async (data) => {
         const res = await apiService.postData("auth/login", { email: data.email, password: data.password });
-        if(res == "Senha incorreta!"){
+        
+        if(typeof res === "string"){
             setShowAlert(true);
             return;
         }
-
+        
         login(res.token);
         router.push("/dashboard")
     }

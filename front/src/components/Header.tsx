@@ -1,13 +1,14 @@
 "use client"
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { logout } from '@/libs'
 import Cookies from 'js-cookie';
-import {navigation, userNavigation} from "../constants/navigation"
+import { personalNavigation, navigation, userNavigation } from "../constants/navigation"
 import { decode } from '@/helpers/jwtUtils';
+import { useRouter } from 'next/navigation';
 
 const user = {
     name: 'Tom Cook',
@@ -19,9 +20,29 @@ function classNames(...classes: any[]) {
     return classes.filter(Boolean).join(' ');
 }
 
-console.log(decode(Cookies.get("session") as string));
-
 const Header = () => {
+    const router = useRouter();
+    const [type, setType] = useState<number>();
+
+    useEffect(() => {
+        const sessionCookie = Cookies.get("session");
+
+        if (!sessionCookie) {
+            router.push("/");
+            return;
+        }
+
+        try {
+            //@ts-ignore
+            const type = decode(sessionCookie).type;
+            setType(type);
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            router.push("/"); // Redirecionar em caso de erro
+        }
+    }, []);
+
+
     return (
         <Disclosure as="nav" className="bg-indigo-700">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -36,19 +57,36 @@ const Header = () => {
                         </div>
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
-                                {navigation.map((item) => (
-                                    <a
-                                        key={item.name}
-                                        href={item.href}
-                                        aria-current={item.current ? 'page' : undefined}
-                                        className={classNames(
-                                            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                            'rounded-md px-3 py-2 text-sm font-medium',
-                                        )}
-                                    >
-                                        {item.name}
-                                    </a>
-                                ))}
+                                {type === 0 ? (
+                                    navigation.map((item) => (
+                                        <a
+                                            key={item.name}
+                                            href={item.href}
+                                            aria-current={item.current ? 'page' : undefined}
+                                            className={classNames(
+                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                'rounded-md px-3 py-2 text-sm font-medium',
+                                            )}
+                                        >
+                                            {item.name}
+                                        </a>
+                                    ))
+                                ) : (
+                                    personalNavigation.map((item) => (
+                                        <a
+                                            key={item.name}
+                                            href={item.href}
+                                            aria-current={item.current ? 'page' : undefined}
+                                            className={classNames(
+                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                'rounded-md px-3 py-2 text-sm font-medium',
+                                            )}
+                                        >
+                                            {item.name}
+                                        </a>
+                                    ))
+                                )}
+
                             </div>
                         </div>
                     </div>
@@ -81,6 +119,13 @@ const Header = () => {
                                             <a
                                                 href={item.href}
                                                 className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                                                onClick={() => {
+                                                    if (item.name == "Sign out") {
+                                                        if (Cookies.get("session")) {
+                                                            logout();
+                                                        }
+                                                    }
+                                                }}
                                             >
                                                 {item.name}
                                             </a>
@@ -144,13 +189,6 @@ const Header = () => {
                                 as="a"
                                 href={item.href}
                                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                                onClick={() => {
-                                    if (item.name == "Sign out") {
-                                        if (Cookies.get("session")) {
-                                            logout();
-                                        }
-                                    }
-                                }}
                             >
                                 {item.name}
                             </DisclosureButton>
