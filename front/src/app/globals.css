@@ -29,3 +29,9 @@ body {
     text-wrap: balance;
   }
 }
+
+.modal-img {
+  width: 200px; /* Ajuste o tamanho conforme necessário */
+  height: 200px; /* A altura deve ser igual à largura para manter o formato quadrado */
+  object-fit: cover; /* Faz a imagem cobrir completamente o container sem distorção */
+}

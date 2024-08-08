@@ -15,7 +15,7 @@ const user = {
 
 const navigation = [
     { name: 'Dashboard', href: 'dashboard', current: true },
-    { name: 'Team', href: 'personals', current: false },
+    { name: 'Personais', href: 'personals', current: false },
     { name: 'Projects', href: '#', current: false },
     { name: 'Calendar', href: '#', current: false },
     { name: 'Reports', href: '#', current: false },
@@ -33,14 +33,14 @@ function classNames(...classes: any[]) {
 
 const Header = () => {
     return (
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-indigo-700">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
                     <div className="flex items-center">
                         <div className="flex-shrink-0">
                             <img
                                 alt="Your Company"
-                                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                                src="https://tailwindui.com/img/logos/mark.svg?color=white"
                                 className="h-8 w-8"
                             />
                         </div>
@@ -66,7 +66,7 @@ const Header = () => {
                         <div className="ml-4 flex items-center md:ml-6">
                             <button
                                 type="button"
-                                className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                className="relative rounded-full bg-indigo-700 p-1 text-black hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                             >
                                 <span className="absolute -inset-1.5" />
                                 <span className="sr-only">View notifications</span>
@@ -76,7 +76,7 @@ const Header = () => {
                             {/* Profile dropdown */}
                             <Menu as="div" className="relative ml-3">
                                 <div>
-                                    <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                    <MenuButton className="relative flex max-w-xs items-center rounded-full bg-indigo-700 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                         <span className="absolute -inset-1.5" />
                                         <span className="sr-only">Open user menu</span>
                                         <UserCircleIcon aria-hidden="true" className="h-12 w-12 text-gray-300" />
