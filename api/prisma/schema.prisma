@@ -23,9 +23,10 @@ model User {
   estado      String?
   pais        String?
   photoUrl    String?
-  treinos     Treino[]   // Relação com Treino
   contratosAsAluno Contrato[] @relation("AlunoContratos") // Relacionamento como Aluno
   contratosAsPersonal Contrato[] @relation("PersonalContratos") // Relacionamento como Personal
+  treinosCriados Treino[] @relation("PersonalTreinos") // Relacionamento com Treino criado pelo personal
+  treinosAluno Treino[] @relation("AlunoTreinos") // Relacionamento com Treino associado ao aluno
 
   @@map("users")
 }
@@ -38,7 +39,9 @@ model Treino {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
   personalId  Int      // Referência ao personal que criou o treino
-  personal    User     @relation(fields: [personalId], references: [id])
+  personal    User     @relation("PersonalTreinos", fields: [personalId], references: [id])
+  alunoId     Int?     // Referência ao aluno associado ao treino
+  aluno       User?    @relation("AlunoTreinos", fields: [alunoId], references: [id])
 
   @@map("treinos")
 }
@@ -54,3 +57,4 @@ model Contrato {
 
   @@map("contratos")
 }
+

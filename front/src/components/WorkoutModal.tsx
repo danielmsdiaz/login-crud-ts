@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import apiService from '@/services/personalServices';
+import { getUserId } from '@/helpers/jwtUtils';
 
 type ModalProps = {
     toggleModal: () => void;
@@ -25,8 +27,10 @@ const WorkoutModal = ({ toggleModal }: ModalProps) => {
     };
 
     const handleSubmit = () => {
-        // Logic to handle submission (e.g., send data to API)
-        toggleModal(); // Fecha o modal após a criação
+        const personalId = getUserId();
+        const data = {title, description, exercises, personalId};
+        apiService.postWorkout("workout", data)
+        toggleModal();
     };
 
     return (
