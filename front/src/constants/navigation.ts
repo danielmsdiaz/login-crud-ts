@@ -8,7 +8,7 @@ export const navigation = [
 
 export const personalNavigation = [
     { name: 'Dashboard', href: 'dashboard', current: true },
-    { name: 'Treinos', href: 'teste', current: false },
+    { name: 'Treinos', href: 'workouts', current: false },
     { name: 'Projects', href: '#', current: false },
     { name: 'Calendar', href: '#', current: false },
     { name: 'Reports', href: '#', current: false },
