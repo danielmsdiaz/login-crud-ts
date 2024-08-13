@@ -35,3 +35,4 @@ body {
   height: 200px; /* A altura deve ser igual à largura para manter o formato quadrado */
   object-fit: cover; /* Faz a imagem cobrir completamente o container sem distorção */
 }
+

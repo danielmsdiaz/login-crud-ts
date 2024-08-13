@@ -72,7 +72,7 @@ const Header = () => {
                                         </a>
                                     ))
                                 ) : (
-                                    personalNavigation.map((item) => (
+                                    personalNavigation.map((item, index) => (
                                         <a
                                             key={item.name}
                                             href={item.href}
