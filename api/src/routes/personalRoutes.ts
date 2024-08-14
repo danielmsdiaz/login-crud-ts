@@ -6,5 +6,6 @@ const routes = Router();
 routes.post("/workout", personalController.createWorkout);
 routes.get("/workout/:personalId", personalController.getAllWorkouts);
 routes.delete("/workout/:id", personalController.deleteWorkout);
+routes.put("/workout/:id", personalController.editWorkout);
 
 export default routes;

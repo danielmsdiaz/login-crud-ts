@@ -77,3 +77,31 @@ export const deleteWorkout = async (req: Request, res: Response) => {
         }
     }
 }
+
+export const editWorkout = async (req: Request, res: Response) => {
+    try {
+        const id: number = parseInt(req.params.id);
+        const { title, description, exercises } = req.body;    
+
+        const result = await personalFunctions.treino.update({
+            where: {
+                id: id
+            },
+            data: {
+                title: title,
+                description: description,
+                exercises: exercises,
+            },
+        });
+
+        if (result) {
+            res.send(result);
+        }
+    } catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        } else {
+            res.send(err.message);
+        }
+    }
+};

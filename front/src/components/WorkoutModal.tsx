@@ -1,16 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import apiService from '@/services/personalServices';
 import { getUserId } from '@/helpers/jwtUtils';
+import WorkoutType from '@/types/Workout';
 
 type ModalProps = {
     toggleModal: () => void;
     fetchWorkouts: () => void;
+    isEdit?: boolean
+    workout?: WorkoutType
+    setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const WorkoutModal = ({fetchWorkouts, toggleModal }: ModalProps) => {
+const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = undefined, setOpen}: ModalProps) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [exercises, setExercises] = useState([{ name: '', reps: '' }]);
+
+    useEffect(() => {
+        if (workout) {
+            setTitle(workout.title || '');
+            setDescription(workout.description || '');
+            setExercises(workout.exercises || [{ name: '', reps: '' }]);
+        }
+    }, [workout]);
 
     const handleAddExercise = () => {
         setExercises([...exercises, { name: '', reps: '' }]);
@@ -29,14 +41,28 @@ const WorkoutModal = ({fetchWorkouts, toggleModal }: ModalProps) => {
 
     const handleSubmit = () => {
         const personalId = getUserId();
-        const data = {title, description, exercises, personalId};
+        const data = { title, description, exercises, personalId };
         apiService.postWorkout("workout", data).then((res) => {
-            if(res){
+            if (res) {
                 fetchWorkouts();
             }
         });
         toggleModal();
     };
+
+    const handleEdit = () => {
+        const data = { title, description, exercises};
+        apiService.editWorkout("workout", workout?.id as number, data).then((res) => {
+            if (res) {
+                fetchWorkouts();
+            }
+        });
+        toggleModal();
+        if(setOpen){
+            setOpen(false);
+        }
+    };
+    
 
     return (
         <>
@@ -55,9 +81,15 @@ const WorkoutModal = ({fetchWorkouts, toggleModal }: ModalProps) => {
                     <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
                         {/* Modal header */}
                         <div className="flex justify-between items-center p-4 border-b rounded-t dark:border-gray-600">
-                            <h3 className="text-xl font-semibold text-indigo-700 dark:text-white">
-                                Criar Novo Treino
-                            </h3>
+                            {isEdit ? (
+                                <h3 className="text-xl font-semibold text-indigo-700 dark:text-white">
+                                    Editar treino
+                                </h3>
+                            ) : (
+                                <h3 className="text-xl font-semibold text-indigo-700 dark:text-white">
+                                    Criar Novo Treino
+                                </h3>
+                            )}
                             <button
                                 type="button"
                                 className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
@@ -152,13 +184,23 @@ const WorkoutModal = ({fetchWorkouts, toggleModal }: ModalProps) => {
                             >
                                 Cancelar
                             </button>
-                            <button
-                                type="button"
-                                className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                                onClick={handleSubmit}
-                            >
-                                Criar Treino
-                            </button>
+                            {isEdit ? (
+                                <button
+                                    type="button"
+                                    className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                                    onClick={handleEdit}
+                                >
+                                    Editar Treino
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                                    onClick={handleSubmit}
+                                >
+                                    Criar Treino
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

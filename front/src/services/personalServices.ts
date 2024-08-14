@@ -37,6 +37,16 @@ const apiService = {
     }
   },
 
+  editWorkout: async (endpoint: string, workoutId: number, data: WorkoutType) => {
+    try {
+      const response = await api.put(`${endpoint}/${workoutId}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição DELETE:', error);
+      throw error;
+    }
+  },
+
 };
 
 export default apiService;
