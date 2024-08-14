@@ -24,26 +24,25 @@ export default function Workouts() {
 
   const toggleOverview = (workout: WorkoutType) => {
     setWorkout(workout);
-    setTimeout(() => setOpenOverview(true), 0); 
+    setTimeout(() => setOpenOverview(true), 0);
   };
 
+  const fetchWorkouts = async () => {
+    try {
+      const data = await apiService.getWorkouts("workout", personalId as number);
+      if (Array.isArray(data)) {
+        setWorkouts(data);
+      } else {
+        console.error("Dados inesperados:", data);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar treinos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        const data = await apiService.getWorkouts("workout", personalId as number);
-        if (Array.isArray(data)) {
-          setWorkouts(data);
-        } else {
-          console.error("Dados inesperados:", data);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar treinos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchWorkouts();
   }, [personalId]);
 
@@ -73,17 +72,19 @@ export default function Workouts() {
                     </ul>
                   </div>
                 ))}
-                <Overview workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
+                {workout && (
+                  <Overview fetchWorkouts={fetchWorkouts} workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
+                )}
                 {/* Card para criar um novo treino */}
                 <div className="group bg-gray-100 p-4 rounded-lg flex items-center justify-center">
                   <button onClick={toggleModal} className="text-sm font-medium text-indigo-700">Criar Novo Treino</button>
                 </div>
                 {openModal && (
-                  <WorkoutModal toggleModal={toggleModal} />
+                  <WorkoutModal fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
                 )}
               </div>
             ) : (
-              <HeroSection />
+              <HeroSection fetchWorkouts={fetchWorkouts}/>
             )}
           </div>
         </main>

@@ -4,9 +4,10 @@ import { getUserId } from '@/helpers/jwtUtils';
 
 type ModalProps = {
     toggleModal: () => void;
+    fetchWorkouts: () => void;
 };
 
-const WorkoutModal = ({ toggleModal }: ModalProps) => {
+const WorkoutModal = ({fetchWorkouts, toggleModal }: ModalProps) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [exercises, setExercises] = useState([{ name: '', reps: '' }]);
@@ -29,7 +30,11 @@ const WorkoutModal = ({ toggleModal }: ModalProps) => {
     const handleSubmit = () => {
         const personalId = getUserId();
         const data = {title, description, exercises, personalId};
-        apiService.postWorkout("workout", data)
+        apiService.postWorkout("workout", data).then((res) => {
+            if(res){
+                fetchWorkouts();
+            }
+        });
         toggleModal();
     };
 

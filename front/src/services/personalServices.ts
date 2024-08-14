@@ -26,6 +26,17 @@ const apiService = {
       throw error;
     }
   },
+
+  deleteWorkout: async (endpoint: string, workoutId: number) => {
+    try {
+      const response = await api.delete(`${endpoint}/${workoutId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição DELETE:', error);
+      throw error;
+    }
+  },
+
 };
 
 export default apiService;

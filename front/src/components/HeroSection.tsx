@@ -3,7 +3,11 @@
 import React, { useState } from 'react'
 import WorkoutModal from './WorkoutModal';
 
-const HeroSection = () => {
+type HeroSectionProps = {
+    fetchWorkouts: () => void
+}
+
+const HeroSection = ({fetchWorkouts}: HeroSectionProps) => {
     const [openModal, setOpenModal] = useState<boolean>(false);
     const toggleModal = () => {
         setOpenModal(!openModal);
@@ -31,7 +35,7 @@ const HeroSection = () => {
                 </div>
             </div>
             {openModal && (
-                <WorkoutModal toggleModal={toggleModal} />
+                <WorkoutModal fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
             )}
         </>
     )

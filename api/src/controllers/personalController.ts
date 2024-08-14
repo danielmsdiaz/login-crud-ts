@@ -54,3 +54,26 @@ export const getAllWorkouts = async (req: Request, res: Response) => {
         }
     }
 }
+
+export const deleteWorkout = async (req: Request, res: Response) => {
+    try {
+        const id: number = parseInt(req.params.id);
+        const result = await personalFunctions.treino.delete({
+            where: {
+                id: id
+            },
+        })
+        
+        if(result){
+            res.send(result);
+        }
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
+        }
+    }
+}
