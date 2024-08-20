@@ -53,7 +53,7 @@ export default function Profile() {
                 <Header />
                 <main>
                     {type == 0 ? (
-                        <GymMemberProfile />
+                        <GymMemberProfile name={name as string} email={email as string} handleFormSubmit={handleFormSubmit}/>
                     ) : (
                         <PersonalProfile name={name as string} email={email as string} handleFormSubmit={handleFormSubmit} />
                     )}

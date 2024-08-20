@@ -1,9 +1,14 @@
 export type GymMemberProfileForm = {
+    username: string,
+    img?: string,
+    name: string,
+    lastName: string,
     email: string,
-    password: string
-    name: string
-    confirmation: string
-    userType: string;
+    zipCode: string,
+    street: string,
+    city: string,
+    state: string,
+    country: string,
 }
 
 export type PersonalProfileForm = {
