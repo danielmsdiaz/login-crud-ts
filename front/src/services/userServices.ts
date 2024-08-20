@@ -6,17 +6,15 @@ const api = axios.create({
 });
 
 const apiService = {
-    // getData: async (endpoint: string, data: {email: string, password: string}) => {
-    //   try {
-    //     const response = await api.get(endpoint, {
-    //       params: data
-    //     });
-    //     return response.data;
-    //   } catch (error) {
-    //     console.error('Erro ao fazer requisição GET:', error);
-    //     throw error;
-    //   }
-    // },
+    getPersonals: async (endpoint: string, type: number) => {
+      try {
+        const response = await api.get(`${endpoint}/${type}`);
+        return response.data;
+      } catch (error) {
+        console.error('Erro ao fazer requisição GET:', error);
+        throw error;
+      }
+    },
 
     postData: async (endpoint: string, data: {name?: string, email: string, password: string}) => {
       try {
@@ -27,6 +25,17 @@ const apiService = {
         throw error;
       }
     },
+
+    getLoggedUser: async (endpoint: string, id: number) => {
+      try {
+        const response = await api.get(`${endpoint}/${id}`);
+        return response.data;
+      } catch (error) {
+        console.error('Erro ao fazer requisição DELETE:', error);
+        throw error;
+      }
+    },
+
   };
   
   export default apiService;

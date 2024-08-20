@@ -23,7 +23,7 @@ export const login = async (req: Request, res: Response) => {
             throw Error("Senha incorreta!")
         }
 
-        const token = jwt.sign({id: user.id, type: user.type}, SECRET as string);
+        const token = jwt.sign({id: user.id, type: user.type, email: user.email, name: user.name}, SECRET as string);
         
         res.json({"token": token, "message": "Usuário logado com sucesso!"})
     }

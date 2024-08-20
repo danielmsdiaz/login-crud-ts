@@ -2,7 +2,7 @@
 
 import Header from '@/components/Header'
 import List from '@/components/List'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogBackdrop,
@@ -18,6 +18,9 @@ import {
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import * as PersonalFilters from "../../types/PersonalFilter";
+import apiService from '@/services/userServices'
+import { getUserId } from '@/helpers/jwtUtils'
+import RegisterWarning from '@/components/RegisterWarning'
 
 const personalTrainers = [
     {
@@ -42,6 +45,17 @@ const personalTrainers = [
     }
 ];
 
+type personalType = {
+    name: string,
+    email: string,
+    role?: string,
+    imageUrl?: string,
+    specializations?: string[],
+    reviews?: number,
+    location?: string,
+    price?: string
+}
+
 const sortOptions = [
     { name: 'Melhor Avaliação', current: false },
     { name: 'Preço: Menor para Maior', current: false },
@@ -53,6 +67,31 @@ function classNames(...classes: any[]) {
 }
 
 const Personals = () => {
+    // const [personals, setPersonals] = useState<personalType[]>(personalTrainers);
+    const [status, setStatus] = useState<boolean>(false);
+
+    // const fetchPersonals = async () => {
+    //     try {
+    //         const data = await apiService.getPersonals("personals", 1);
+    //         if (Array.isArray(data)) {
+    //             setPersonals(data);
+    //         } else {
+    //             console.error("Dados inesperados:", data);
+    //         }
+    //     } catch (error) {
+    //         console.error("Erro ao buscar treinos:", error);
+    //     } finally {
+    //         //setLoading(false);
+    //     }
+    // };
+
+    useEffect(() => {
+        const id = getUserId() as number;
+        apiService.getLoggedUser("users", id).then((user) => {
+            setStatus(user.status);
+        });
+    }, []);
+
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
     const [selectedFilters, setSelectedFilters] = useState<PersonalFilters.SelectedFilters>({
         specialization: [],
@@ -72,7 +111,7 @@ const Personals = () => {
             } else {
                 const currentFilters = prev[filterId];
                 const isChecked = currentFilters.includes(value);
-    
+
                 return {
                     ...prev,
                     [filterId]: isChecked
@@ -82,16 +121,16 @@ const Personals = () => {
             }
         });
     };
-    
+
 
     const filterPersonalTrainers = () => {
         const filtered = personalTrainers.filter(trainer => {
             const matchesSpecialization = selectedFilters.specialization.length === 0 ||
                 trainer.specializations.some(spec => selectedFilters.specialization.includes(spec.toLowerCase()))
-            
+
             const matchesRating = selectedFilters.rating.length === 0 ||
                 selectedFilters.rating.some(rating => trainer.reviews >= parseFloat(rating))
-            
+
             const matchesLocation = selectedFilters.location.length === 0 ||
                 selectedFilters.location.includes(trainer.location.replace(', SP', '').replace(', RJ', '').toLowerCase())
 
@@ -105,10 +144,10 @@ const Personals = () => {
                     return b.reviews - a.reviews; // Highest rating first
                 case 'Preço: Menor para Maior':
                     return parseFloat(a.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')) -
-                           parseFloat(b.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')); // Lowest price first
+                        parseFloat(b.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')); // Lowest price first
                 case 'Preço: Maior para Menor':
                     return parseFloat(b.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')) -
-                           parseFloat(a.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')); // Highest price first
+                        parseFloat(a.price.replace('R$', '').replace(' por sessão', '').replace(',', '.')); // Highest price first
                 default:
                     return 0;
             }
@@ -244,8 +283,9 @@ const Personals = () => {
                                 </DialogPanel>
                             </div>
                         </Dialog>
-
-                        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        
+                        {status ? (
+                            <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                             <section aria-labelledby="products-heading" className="pb-24 pt-6">
                                 <h2 id="products-heading" className="sr-only">
                                     Personais
@@ -293,8 +333,14 @@ const Personals = () => {
                                         <List personais={filteredTrainers} />
                                     </div>
                                 </div>
+
                             </section>
                         </main>
+                        ): (
+                            <RegisterWarning/>
+                        )}
+                        
+
                     </div>
                 </div>
             </div>

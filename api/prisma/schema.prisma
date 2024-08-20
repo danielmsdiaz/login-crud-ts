@@ -10,9 +10,10 @@ datasource db {
 model User {
   id          Int        @id @default(autoincrement())
   name        String
+  lastName    String?
   email       String     @unique
   password    String
-  status      Boolean    @default(true)
+  status      Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @default(now()) @updatedAt
   type        Int        
@@ -23,6 +24,10 @@ model User {
   estado      String?
   pais        String?
   photoUrl    String?
+  bio         String?
+  preco       Decimal?
+  cargo       String?
+  especial    String[]
   contratosAsAluno Contrato[] @relation("AlunoContratos") // Relacionamento como Aluno
   contratosAsPersonal Contrato[] @relation("PersonalContratos") // Relacionamento como Personal
   treinosCriados Treino[] @relation("PersonalTreinos") // Relacionamento com Treino criado pelo personal

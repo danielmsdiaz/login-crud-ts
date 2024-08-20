@@ -25,7 +25,7 @@ const Register = () => {
     };
     
     const res = await apiService.postData("register", userData);
-    if (res.User.status) {
+    if (res.User.id) {
       alert("Usuário criado com sucesso");
       router.push("/");
     }

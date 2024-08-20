@@ -15,7 +15,7 @@ export const register = async (req: Request, res: Response) => {
         const user = await userFunctions.user.create({
             data
         })
-        
+                
         res.status(201).json({ "User": user });
     }
     catch (err: any) {
@@ -54,6 +54,68 @@ export const deleteAccount = async (req: Request, res: Response) => {
         }
 
         return res.send("Usuário inexistente");
+
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
+        }
+    }
+}
+
+export const getUserTypePersonal = async (req: Request, res: Response) => {
+    try {
+        const type: number = parseInt(req.params.type);
+        
+        if (isNaN(type)) {
+            throw Error("Tipo inexistente")
+        }
+
+        const personals = await userFunctions.user.findMany({
+            where: {
+                type: type
+            },
+        })
+
+        if(personals){
+            return res.send(personals);
+        }
+
+        return res.send("Não existem personais cadastrados");
+
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
+        }
+    }
+}
+
+export const getLoggedUser = async (req: Request, res: Response) => {
+    try {
+        const id: number = parseInt(req.params.id);
+        
+        if (isNaN(id)) {
+            throw Error("Usuário inexistente")
+        }
+
+        const user = await userFunctions.user.findUnique({
+            where: {
+                id: id
+            },
+        })
+
+        if(user){
+            return res.send(user);
+        }
+
+        return res.send("Não existe usuários cadastrados");
 
     }
     catch (err: any) {
