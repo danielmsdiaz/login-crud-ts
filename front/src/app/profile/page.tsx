@@ -9,9 +9,11 @@ import GymMemberProfile from '@/components/Profile';
 import PersonalProfile from '@/components/PersonalProfile';
 import { PersonalProfileForm, GymMemberProfileForm } from '@/types/ProfileForm';
 import { SubmitHandler } from 'react-hook-form';
+import apiService from '@/services/userServices';
 
 export default function Profile() {
 
+    const [id, setId] = useState<number>();
     const [type, setType] = useState<number>();
     const [email, setEmail] = useState<string>();
     const [name, setName] = useState<string>();
@@ -19,7 +21,7 @@ export default function Profile() {
     const router = useRouter();
 
     const handleFormSubmit: SubmitHandler<PersonalProfileForm | GymMemberProfileForm> = async (data) => {
-        console.log(data);
+        const res = apiService.updateProfile("users", id as number, type as number, data);
     };
 
     useEffect(() => {
@@ -32,11 +34,14 @@ export default function Profile() {
 
         try {
             //@ts-ignore
+            const id = decode(sessionCookie).id;
+            //@ts-ignore
             const type = decode(sessionCookie).type;
             //@ts-ignore
             const name = decode(sessionCookie).name;
             //@ts-ignore
             const email = decode(sessionCookie).email;
+            setId(id);
             setType(type);
             setName(name);
             setEmail(email);

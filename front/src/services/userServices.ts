@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { PersonalProfileForm, GymMemberProfileForm } from '@/types/ProfileForm';
 
 const api = axios.create({
   baseURL: 'http://localhost:4000/api', 
@@ -32,6 +33,16 @@ const apiService = {
         return response.data;
       } catch (error) {
         console.error('Erro ao fazer requisição DELETE:', error);
+        throw error;
+      }
+    },
+
+    updateProfile: async (endpoint: string, id: number, type: number, data: PersonalProfileForm | GymMemberProfileForm) => {
+      try {
+        const response = await api.put(`${endpoint}/${type}/${id}`, data);
+        return response.data;
+      } catch (error) {
+        console.error('Erro ao fazer requisição POST:', error);
         throw error;
       }
     },
