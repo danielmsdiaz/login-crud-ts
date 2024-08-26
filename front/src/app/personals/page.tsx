@@ -23,8 +23,9 @@ import { getUserId } from '@/helpers/jwtUtils'
 import RegisterWarning from '@/components/RegisterWarning'
 import Loader from '@/components/Loader';
 
-const personalTrainers = [
+let personalTrainers = [
     {
+        id: 1,
         name: "João Silva",
         email: "joao.silva@example.com",
         role: "Especialista em Musculação",
@@ -35,6 +36,7 @@ const personalTrainers = [
         price: "R$80 por sessão",
     },
     {
+        id: 2,
         name: "Ana Pereira",
         email: "ana.pereira@example.com",
         role: "Treinadora de Condicionamento Físico",
@@ -45,17 +47,6 @@ const personalTrainers = [
         price: "R$100 por sessão",
     }
 ];
-
-type personalType = {
-    name: string,
-    email: string,
-    role?: string,
-    imageUrl?: string,
-    specializations?: string[],
-    reviews?: number,
-    location?: string,
-    price?: string
-}
 
 const sortOptions = [
     { name: 'Melhor Avaliação', current: false },
@@ -68,32 +59,56 @@ function classNames(...classes: any[]) {
 }
 
 const Personals = () => {
-    // const [personals, setPersonals] = useState<personalType[]>(personalTrainers);
+    const [personals, setPersonals] = useState<any[]>();
     const [status, setStatus] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
-    // const fetchPersonals = async () => {
-    //     try {
-    //         const data = await apiService.getPersonals("personals", 1);
-    //         if (Array.isArray(data)) {
-    //             setPersonals(data);
-    //         } else {
-    //             console.error("Dados inesperados:", data);
-    //         }
-    //     } catch (error) {
-    //         console.error("Erro ao buscar treinos:", error);
-    //     } finally {
-    //         //setLoading(false);
-    //     }
-    // };
+    const [loggedUser, setLoggedUser] = useState<number>();
+
+    const fetchPersonals = async () => {
+        try {
+            const data = await apiService.getPersonals("personals", 1);
+            if (Array.isArray(data)) {
+                console.log(data);
+                setPersonals(data);
+            } else {
+                console.error("Dados inesperados:", data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar treinos:", error);
+        } finally {
+            //setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const id = getUserId() as number;
+        setLoggedUser(id);
         apiService.getLoggedUser("users", id).then((user) => {
             setStatus(user.status);
         }).finally(() => {
-            setLoading(false);
+            fetchPersonals();
+            //setLoading(false);
         });
     }, []);
+
+    useEffect(() => {
+        if (personals) {
+            personalTrainers = personals.map((personal) => {
+                return {
+                    id: personal.id,
+                    name: personal.name,
+                    email: personal.email,
+                    role: personal.cargo,
+                    imageUrl: "blob:http://localhost:3000/8d0fbace-0f2c-4e9e-a5fb-8c72c7ac9335",
+                    specializations: personal.especial,
+                    reviews: 4.9,
+                    location: `${personal.cidade}, ${personal.estado}`,
+                    price: personal.preco,
+                }
+            });
+            setLoading(false);
+        }
+    }, [personals]);
 
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
     const [selectedFilters, setSelectedFilters] = useState<PersonalFilters.SelectedFilters>({
@@ -337,7 +352,7 @@ const Personals = () => {
 
                                                 {/* Product grid */}
                                                 <div className="lg:col-span-3">
-                                                    <List personais={filteredTrainers} />
+                                                    <List personais={filteredTrainers} loggedUser={loggedUser as number}/>
                                                 </div>
                                             </div>
 

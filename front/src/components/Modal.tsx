@@ -1,6 +1,8 @@
 import React from 'react';
+import apiService from '@/services/contractServices';
 
 type Personal = {
+    id: number;
     name: string;
     email: string;
     role: string;
@@ -14,9 +16,20 @@ type Personal = {
 type ModalProps = {
     personal: Personal;
     toggleModal: () => void;
+    loggedUser: number;
 };
 
-const Modal = ({ personal, toggleModal }: ModalProps) => {
+const Modal = ({ personal, toggleModal, loggedUser}: ModalProps) => {
+
+    const handleModalSubmit = () => {
+        const data = {loggedUserId: loggedUser, personalId: personal.id}
+        apiService.postContract("create", data).then((res) => {
+            if(res){
+                alert("Sua solicitação de contrato foi enviada!")
+            }
+        }).finally(() => toggleModal());
+    }
+
     return (
         <>
             {/* Overlay */}
@@ -26,7 +39,8 @@ const Modal = ({ personal, toggleModal }: ModalProps) => {
             <div
                 id="default-modal"
                 tabIndex={-1}
-                aria-hidden="true"
+                aria-hidden={true}
+                aria-modal={true}
                 className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden"
             >
                 <div className="relative p-4 w-full max-w-md max-h-full">
@@ -74,6 +88,7 @@ const Modal = ({ personal, toggleModal }: ModalProps) => {
                             <button
                                 type="button"
                                 className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                                onClick={handleModalSubmit}
                             >
                                 Contratar
                             </button>

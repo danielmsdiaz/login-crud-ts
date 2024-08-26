@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
 import { Prisma, Prisma as PrismaClient } from "@prisma/client";
 import { userFunctions } from "../services/user";
-import { z } from "zod"
+import { number, z } from "zod"
 import bycript from "bcrypt"
 
 
 export const register = async (req: Request, res: Response) => {
     let data: PrismaClient.UserCreateInput = { name: req.body.name, email: req.body.email, password: req.body.password, type: req.body.userType };
-    
+
     try {
         const hashedPassword = await bycript.hash(data.password, 10);
-        data.password = hashedPassword;      
-        
+        data.password = hashedPassword;
+
         const user = await userFunctions.user.create({
             data
         })
-                
+
         res.status(201).json({ "User": user });
     }
     catch (err: any) {
@@ -24,6 +24,57 @@ export const register = async (req: Request, res: Response) => {
         }
         else {
             res.status(400).send(err)
+        }
+    }
+}
+
+export const editUser = async (req: Request, res: Response) => {
+    const id: number = parseInt(req.params.id);
+    const type: number = parseInt(req.params.type);
+    let data: Prisma.UserUncheckedUpdateInput = {};
+
+    try {
+        if (type === 0) {
+            data = {
+                lastName: req.body.lastName,
+                username: req.body.username,
+                photoUrl: req.body.img,
+                cep: req.body.zipCode,
+                logradouro: req.body.street,
+                cidade: req.body.city,
+                estado: req.body.state,
+                pais: req.body.country,
+                status: true,
+            };
+        }
+        else {
+            data = {
+                lastName: req.body.lastName,
+                username: req.body.username,
+                photoUrl: req.body.img,
+                cep: req.body.zipCode,
+                logradouro: req.body.street,
+                cidade: req.body.city,
+                estado: req.body.state,
+                pais: req.body.country,
+                preco: req.body.price,
+                cargo: req.body.role,
+                especial: req.body.specializations.split(',').map((item: string) => item.trim()),
+                status: true,
+            };
+        }
+        
+        const user = await userFunctions.user.update({
+            where: { id: id },
+            data: data,
+        });
+
+        return res.json(user);
+    } catch (err: any) {    
+        if (err instanceof z.ZodError) {
+            res.status(400).json({ error: err.issues[0].message });
+        } else {
+            res.status(400).json({ error: err.message });
         }
     }
 }
@@ -69,18 +120,19 @@ export const deleteAccount = async (req: Request, res: Response) => {
 export const getUserTypePersonal = async (req: Request, res: Response) => {
     try {
         const type: number = parseInt(req.params.type);
-        
+
         if (isNaN(type)) {
             throw Error("Tipo inexistente")
         }
 
         const personals = await userFunctions.user.findMany({
             where: {
-                type: type
+                type: type,
+                status: true
             },
         })
 
-        if(personals){
+        if (personals) {
             return res.send(personals);
         }
 
@@ -100,7 +152,7 @@ export const getUserTypePersonal = async (req: Request, res: Response) => {
 export const getLoggedUser = async (req: Request, res: Response) => {
     try {
         const id: number = parseInt(req.params.id);
-        
+
         if (isNaN(id)) {
             throw Error("Usuário inexistente")
         }
@@ -111,7 +163,7 @@ export const getLoggedUser = async (req: Request, res: Response) => {
             },
         })
 
-        if(user){
+        if (user) {
             return res.send(user);
         }
 

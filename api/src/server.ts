@@ -4,6 +4,7 @@ import cors from "cors"
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
 import personalRoutes from "./routes/personalRoutes"
+import contractRoutes from "./routes/contractRoutes" 
 
 dotenv.config();
 const server = express();
@@ -15,6 +16,7 @@ server.use(express.json());
 server.use("/api", userRoutes);
 server.use("/api/auth", authRoutes);
 server.use("/api/personal", personalRoutes);
+server.use("/api/contract", contractRoutes);
 
 server.listen(process.env.PORT, () => {
     console.log(`Escutando a porta ${process.env.PORT}`);

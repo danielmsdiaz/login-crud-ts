@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 
 type Personal = {
+    id: number;
     name: string;
     email: string;
     role: string;
@@ -14,6 +15,7 @@ type Personal = {
 
 type ListProps = {
     personais: Personal[];
+    loggedUser: number;
 };
 
 const List = (props: ListProps) => {
@@ -62,7 +64,7 @@ const List = (props: ListProps) => {
                 </div>
             </main>
             {currentPersonal && (
-                <Modal personal={currentPersonal} toggleModal={() => toggleModal(null)} />
+                <Modal loggedUser={props.loggedUser} personal={currentPersonal} toggleModal={() => toggleModal(null)} />
             )}
         </>
     );

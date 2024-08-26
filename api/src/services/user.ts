@@ -1,4 +1,4 @@
-import { UserCreateInput } from "../models/User";
+import { UserCreateInput, UserEditInput } from "../models/User";
 import { prisma } from "../libs/prisma";
 
 export const userFunctions = prisma.$extends({
@@ -8,8 +8,9 @@ export const userFunctions = prisma.$extends({
                 args.data = UserCreateInput.parse(args.data)
                 return query(args)
             },
-            update({ args, query }) {
-                args.data = UserCreateInput.partial().parse(args.data)
+            update({ args, query }) {    
+                args.data = UserEditInput.partial().parse(args.data)
+                console.log(args.data);
                 return query(args)
             },
             updateMany({ args, query }) {
