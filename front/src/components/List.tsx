@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
+import apiService from '@/services/contractServices';
+import ContractType from '@/types/Contract';
 
 type Personal = {
     id: number;
@@ -20,10 +22,29 @@ type ListProps = {
 
 const List = (props: ListProps) => {
     const [currentPersonal, setCurrentPersonal] = useState<Personal | null>(null);
+    const [userContracts, setUserContracts] = useState<ContractType[]>();
+    const [hasPendingContracts, setHasPendingContracts] = useState<boolean>(false);
+    const [refresh, setRefresh] = useState<boolean>(false);
+
+    useEffect(() => {
+        apiService.getContracts("get", props.loggedUser).then((res) => {
+            setUserContracts(res);
+        });
+    }, [refresh])
+
+    useEffect(() => {
+        if(userContracts?.length){
+            setHasPendingContracts(true);
+        }
+    }, [userContracts])
 
     const toggleModal = (personal: Personal | null) => {
         setCurrentPersonal(personal);
     };
+
+    const cancelSolicitation = () => {
+        alert("sda")
+    }
 
     return (
         <>
@@ -51,12 +72,22 @@ const List = (props: ListProps) => {
                                     <p className="text-sm leading-6 text-gray-900">{person.role}</p>
                                     <p className="mt-1 text-xs leading-5 text-gray-500">Avaliação: {person.reviews}</p>
                                     <p className="mt-1 text-xs leading-5 text-gray-500">Preço: {person.price}</p>
-                                    <button
-                                        onClick={() => toggleModal(person)}
-                                        className="mt-2 text-xs font-semibold text-indigo-700 hover:underline"
-                                    >
-                                        Detalhes
-                                    </button>
+                                    {userContracts && userContracts.filter(contract => contract.personalId === person.id).length > 0 ? (
+                                        <button
+                                            onClick={cancelSolicitation}
+                                            className="mt-2 text-xs font-semibold text-red-700 hover:underline"
+                                        >
+                                            Cancelar solicitação
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => toggleModal(person)}
+                                            className="mt-2 text-xs font-semibold text-indigo-700 hover:underline"
+                                        >
+                                            Detalhes
+                                        </button>
+                                    )}
+
                                 </div>
                             </li>
                         ))}
@@ -64,7 +95,7 @@ const List = (props: ListProps) => {
                 </div>
             </main>
             {currentPersonal && (
-                <Modal loggedUser={props.loggedUser} personal={currentPersonal} toggleModal={() => toggleModal(null)} />
+                <Modal setRefresh={setRefresh} hasPendingContracts={hasPendingContracts} loggedUser={props.loggedUser} personal={currentPersonal} toggleModal={() => toggleModal(null)} />
             )}
         </>
     );

@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
+import { UserCircleIcon } from '@heroicons/react/24/solid'
 import { logout } from '@/libs'
 import Cookies from 'js-cookie';
 import { personalNavigation, navigation, userNavigation } from "../constants/navigation"
 import { decode } from '@/helpers/jwtUtils';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import Loader from '@/components/Loader'; // Supondo que o Loader esteja exportado corretamente
 
 const user = {
     name: 'Tom Cook',
@@ -22,7 +23,10 @@ function classNames(...classes: any[]) {
 
 const Header = () => {
     const router = useRouter();
+    const pathname = usePathname();
     const [type, setType] = useState<number>();
+    const [newPath, setNewPath] = useState<string>();
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const sessionCookie = Cookies.get("session");
@@ -36,12 +40,21 @@ const Header = () => {
             //@ts-ignore
             const type = decode(sessionCookie).type;
             setType(type);
+            setIsLoading(false);
         } catch (error) {
             console.error("Failed to decode token:", error);
             router.push("/"); // Redirecionar em caso de erro
         }
     }, []);
 
+    useEffect(() => {
+        const pathString = pathname.replace("/", "");
+        setNewPath(pathString);
+    })
+    
+    if (isLoading) {
+        return <Loader />;
+    }
 
     return (
         <Disclosure as="nav" className="bg-indigo-700">
@@ -49,11 +62,7 @@ const Header = () => {
                 <div className="flex h-16 items-center justify-between">
                     <div className="flex items-center">
                         <div className="flex-shrink-0">
-                            <img
-                                alt="Your Company"
-                                src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                                className="h-8 w-8"
-                            />
+                        <img className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1" src="https://tailwindui.com/plus/img/logos/158x48/statamic-logo-gray-900.svg" alt="Statamic" width="158" height="48"/>
                         </div>
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
@@ -64,7 +73,7 @@ const Header = () => {
                                             href={item.href}
                                             aria-current={item.current ? 'page' : undefined}
                                             className={classNames(
-                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                item.href == newPath ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                 'rounded-md px-3 py-2 text-sm font-medium',
                                             )}
                                         >
@@ -78,7 +87,7 @@ const Header = () => {
                                             href={item.href}
                                             aria-current={item.current ? 'page' : undefined}
                                             className={classNames(
-                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                item.href == newPath ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                 'rounded-md px-3 py-2 text-sm font-medium',
                                             )}
                                         >
@@ -200,4 +209,4 @@ const Header = () => {
     );
 };
 
-export default Header
+export default Header;

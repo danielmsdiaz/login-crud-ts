@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import apiService from '@/services/contractServices';
 
 type Personal = {
@@ -17,18 +17,30 @@ type ModalProps = {
     personal: Personal;
     toggleModal: () => void;
     loggedUser: number;
+    hasPendingContracts: boolean
+    setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Modal = ({ personal, toggleModal, loggedUser}: ModalProps) => {
+const Modal = ({setRefresh, hasPendingContracts, personal, toggleModal, loggedUser }: ModalProps) => {
 
     const handleModalSubmit = () => {
-        const data = {loggedUserId: loggedUser, personalId: personal.id}
-        apiService.postContract("create", data).then((res) => {
-            if(res){
-                alert("Sua solicitação de contrato foi enviada!")
-            }
-        }).finally(() => toggleModal());
-    }
+        if (hasPendingContracts) {
+            alert("Você já possui um contrato!");
+            return toggleModal();
+        }
+    
+        const data = { loggedUserId: loggedUser, personalId: personal.id };
+        apiService.postContract("create", data)
+            .then((res) => {
+                if (res) {
+                    alert("Sua solicitação de contrato foi enviada!");
+                }
+            })
+            .finally(() => {
+                setRefresh(true);
+                toggleModal();
+            });
+    };
 
     return (
         <>

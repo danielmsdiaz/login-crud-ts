@@ -68,7 +68,6 @@ const Personals = () => {
         try {
             const data = await apiService.getPersonals("personals", 1);
             if (Array.isArray(data)) {
-                console.log(data);
                 setPersonals(data);
             } else {
                 console.error("Dados inesperados:", data);
@@ -99,7 +98,7 @@ const Personals = () => {
                     name: personal.name,
                     email: personal.email,
                     role: personal.cargo,
-                    imageUrl: "blob:http://localhost:3000/8d0fbace-0f2c-4e9e-a5fb-8c72c7ac9335",
+                    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
                     specializations: personal.especial,
                     reviews: 4.9,
                     location: `${personal.cidade}, ${personal.estado}`,

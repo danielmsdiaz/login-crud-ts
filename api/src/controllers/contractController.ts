@@ -22,3 +22,28 @@ export const createContract = async (req: Request, res: Response) => {
         }
     }
 }
+
+
+export const getUserContracts = async (req: Request, res: Response) => {
+    try {
+        const id: number = parseInt(req.params.id);
+        
+        const contracts = await contractFunctions.contrato.findMany({
+            where: {
+                alunoId: id
+            },
+        })
+        
+        if(contracts){
+            res.send(contracts);
+        }
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
+        }
+    }
+}
