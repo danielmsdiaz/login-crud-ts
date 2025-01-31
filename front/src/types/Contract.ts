@@ -1,6 +1,7 @@
 type ContractType = {
-    loggedUserId: number,
-    personalId: number,
+    id?: number,
+    loggedUserId?: number,
+    personalId?: number,
     status?: boolean
 }
 

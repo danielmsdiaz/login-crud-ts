@@ -9,9 +9,7 @@ export const navigation = [
 export const personalNavigation = [
     { name: 'Dashboard', href: 'dashboard', current: false },
     { name: 'Treinos', href: 'workouts', current: true },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-    { name: 'Reports', href: '#', current: false },
+    { name: 'Contratos', href: 'contracts', current: false },
 ];
 
 export const userNavigation = [

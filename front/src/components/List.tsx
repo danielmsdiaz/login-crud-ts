@@ -27,13 +27,13 @@ const List = (props: ListProps) => {
     const [refresh, setRefresh] = useState<boolean>(false);
 
     useEffect(() => {
-        apiService.getContracts("get", props.loggedUser).then((res) => {
+        apiService.getContracts("get", 0, props.loggedUser).then((res) => {
             setUserContracts(res);
         });
     }, [refresh])
 
     useEffect(() => {
-        if(userContracts?.length){
+        if (userContracts?.length) {
             setHasPendingContracts(true);
         }
     }, [userContracts])
@@ -42,8 +42,23 @@ const List = (props: ListProps) => {
         setCurrentPersonal(personal);
     };
 
-    const cancelSolicitation = () => {
-        alert("sda")
+    const cancelSolicitation = async () => {
+        const data = { loggedUserId: props.loggedUser }
+
+        try {
+            const response = await apiService.deleteContract("delete", data);
+
+            if (!response) {
+                return alert("Erro ao cancelar o contrato")
+            }
+
+            alert("Contrato cancelado com sucesso")
+            setHasPendingContracts(false);
+            setRefresh(false);
+        }
+        catch (er) {
+            console.log(er);
+        }
     }
 
     return (

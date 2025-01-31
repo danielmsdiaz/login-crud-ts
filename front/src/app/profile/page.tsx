@@ -22,6 +22,8 @@ export default function Profile() {
 
     const handleFormSubmit: SubmitHandler<PersonalProfileForm | GymMemberProfileForm> = async (data) => {
         const res = apiService.updateProfile("users", id as number, type as number, data);
+        alert("Perfil atualizado com sucesso!")
+        router.push("/dashboard");
     };
 
     useEffect(() => {

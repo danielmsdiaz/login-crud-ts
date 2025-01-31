@@ -87,7 +87,7 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
                                 </h3>
                             ) : (
                                 <h3 className="text-xl font-semibold text-indigo-700 dark:text-white">
-                                    Criar Novo Treino
+                                    Novo Treino
                                 </h3>
                             )}
                             <button

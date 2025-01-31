@@ -17,9 +17,21 @@ const apiService = {
     }
   },
 
-  getContracts: async (endpoint: string, userId: number) => {
+  deleteContract: async (endpoint: string, data: ContractType) => {
     try {
-      const response = await api.get(`${endpoint}/${userId}`);
+      const response = await api.delete(endpoint, {
+        data
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição DELETE:', error);
+      throw error;
+    }
+  },
+
+  getContracts: async (endpoint: string, type: number, userId: number) => {
+    try {
+      const response = await api.get(`${endpoint}/${type}/${userId}`);
       return response.data;
     } catch (error) {
       console.error('Erro ao fazer requisição GET:', error);
