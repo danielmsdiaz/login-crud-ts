@@ -13,12 +13,17 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(' ')
 }
 
+type ActiveContract = {
+  id: number,
+  status: boolean
+}
+
 export default function Contracts() {
   const [loading, setLoading] = useState<boolean>(true);
   const [contracts, setContracts] = useState<any[]>();
   const categories = ["Feitos", "Pendentes"];
   const [tab, setTab] = useState<string>("Feitos");
-  const [activeContract, setActiveContract] = useState<number | null>(null);
+  const [activeContract, setActiveContract] = useState<ActiveContract | null>(null);
   const [toggleModal, setToggleModal] = useState<boolean>(false);
   const [aluno, setAluno] = useState<number>();
   const [refresh, setRefresh] = useState<boolean>(false);
@@ -27,7 +32,6 @@ export default function Contracts() {
     try {
       const personalId = getUserId();
       const data = await apiService.getContracts("get", 1, personalId as number);
-      setAluno(data.alunoId);
       
       if (Array.isArray(data)) {
         setContracts(data);
@@ -54,8 +58,8 @@ export default function Contracts() {
     return tab === "Feitos" ? setTab("Pendentes") : setTab("Feitos");
   }
 
-  const handleContractClick = (contractId: number) => {
-    setActiveContract((prev) => (prev === contractId ? null : contractId));
+  const handleContractClick = (contract: any) => {
+    setActiveContract({id: contract.id, status: contract.status});
     setToggleModal(true);
   }
 
@@ -111,10 +115,10 @@ export default function Contracts() {
                                 'relative rounded-md p-3 hover:bg-gray-100 cursor-pointer',
                                 activeContract === contract.id ? 'border-2 border-indigo-700' : ''
                               )}
-                              onClick={() => { handleContractClick(contract.id as number)}}
+                              onClick={() => { handleContractClick(contract)}}
                             >
                               <h3 className="text-sm leading-5 text-indigo-900 font-semibold">
-                                {`Solicitação de contrato`}
+                                {`${tab === "Feitos" ? "Contrato realizado: " : "Solicitação de contrato: "} ${contract.id}`}
                               </h3>
 
                               <ul className="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
@@ -133,7 +137,7 @@ export default function Contracts() {
                 </Tab.Group>
               </div>
               {toggleModal && (
-                <ContractModal refresh={setRefresh} alunoId={aluno as number} toggleModal={setToggleModal} />
+                <ContractModal activeContract={activeContract} refresh={setRefresh} alunoId={aluno as number} toggleModal={setToggleModal} />
               )}
             </main>
           </>

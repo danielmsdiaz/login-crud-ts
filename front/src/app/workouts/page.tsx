@@ -9,6 +9,7 @@ import WorkoutType from '@/types/Workout';
 import WorkoutModal from '@/components/WorkoutModal';
 import Loader from '@/components/Loader';
 import Overview from '@/components/WorkoutOverview';
+import { UserIcon } from '@heroicons/react/20/solid'
 
 export default function Workouts() {
   const personalId = getUserId();
@@ -62,29 +63,39 @@ export default function Workouts() {
             ) : workouts.length > 0 ? (
               <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
                 {workouts.map((workout) => (
-                  <div onClick={() => { toggleOverview(workout) }} key={workout.id} className="group bg-gray-100 p-4 rounded-lg">
-                    <h3 className="mt-4 text-sm font-medium text-gray-700">{workout.title}</h3>
-                    <p className="mt-2 text-sm text-gray-700 font-medium">Exercícios:</p>
-                    <ul className="list-disc list-inside text-sm text-gray-500">
-                      {workout.exercises.map((exercise, index) => (
-                        <li key={index}>{exercise.name} - {exercise.reps} repetições</li>
-                      ))}
-                    </ul>
+                  <div onClick={() => { toggleOverview(workout) }} key={workout.id} className="group bg-gray-100 rounded-lg p-4 max-h-[200px] flex flex-col justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700 capitalize mb-2">{workout.title}</h3>
+                      <p className="mt-2 text-sm text-gray-700 font-medium">Exercícios:</p>
+                      <ul className="list-disc list-inside text-sm text-gray-500 max-h-[120px] overflow-hidden">
+                        {workout.exercises.slice(0, 2).map((exercise, index) => (
+                          <li key={index} className="text-ellipsis">{exercise.name} - {exercise.reps} repetições</li>
+                        ))}
+                        {workout.exercises.length > 2 && (
+                          <li className="text-ellipsis text-gray-500">... e mais</li>
+                        )}
+                      </ul>
+                    </div>
+
+                    <p className='text-sm flex items-center mt-2 self-start'>
+                      <UserIcon height={15} className="mr-2 text-indigo-500" />
+                      {`${workout.aluno.name} ${workout.aluno.lastName}`}
+                    </p>
                   </div>
                 ))}
                 {workout && (
-                  <Overview fetchWorkouts={fetchWorkouts} workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
+                  <Overview personalId={personalId as number} fetchWorkouts={fetchWorkouts} workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
                 )}
                 {/* Card para criar um novo treino */}
                 <div className="group bg-gray-100 p-4 rounded-lg flex items-center justify-center">
                   <button onClick={toggleModal} className="text-sm font-medium text-indigo-700">Criar Novo Treino</button>
                 </div>
                 {openModal && (
-                  <WorkoutModal fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
+                  <WorkoutModal personalId={personalId as number} fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
                 )}
               </div>
             ) : (
-              <HeroSection fetchWorkouts={fetchWorkouts}/>
+              <HeroSection personalId={personalId as number} fetchWorkouts={fetchWorkouts} />
             )}
           </div>
         </main>

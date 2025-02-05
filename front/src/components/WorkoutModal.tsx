@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import apiService from '@/services/personalServices';
 import { getUserId } from '@/helpers/jwtUtils';
 import WorkoutType from '@/types/Workout';
+import WorkoutDropdown from './WorkoutDropdown';
 
 type ModalProps = {
     toggleModal: () => void;
@@ -9,12 +10,36 @@ type ModalProps = {
     isEdit?: boolean
     workout?: WorkoutType
     setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+    personalId: number
 };
 
-const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = undefined, setOpen}: ModalProps) => {
+const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = undefined, setOpen, personalId }: ModalProps) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [exercises, setExercises] = useState([{ name: '', reps: '' }]);
+    const [alunos, setAlunos] = useState<{ name: string, id: number | null }[]>([{ name: '', id: null }]);
+    const [selectedAluno, setSelectedAluno] = useState<number | null>(null);
+
+    const fetchAlunos = async () => {
+        try {
+            const data = await apiService.getAlunos("alunos", personalId);
+    
+            if (Array.isArray(data)) {
+                setAlunos((prevAlunos) => {
+                    const newAlunos = data.map((aluno) => ({ name: aluno.name, id: aluno.id }));
+                    const alunosUnique = [...prevAlunos, ...newAlunos].filter(
+                        (aluno, index, self) =>
+                            index === self.findIndex((a) => a.id === aluno.id)
+                    );
+                    return alunosUnique;
+                });
+            } else {
+                console.error("Dados inesperados:", data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar alunos:", error);
+        }
+    };
 
     useEffect(() => {
         if (workout) {
@@ -23,6 +48,10 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
             setExercises(workout.exercises || [{ name: '', reps: '' }]);
         }
     }, [workout]);
+
+    useEffect(() => {
+        fetchAlunos();
+    }, []);
 
     const handleAddExercise = () => {
         setExercises([...exercises, { name: '', reps: '' }]);
@@ -39,9 +68,15 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
         setExercises(newExercises);
     };
 
+    const handleAlunoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setSelectedAluno(value ? parseInt(value) : null);
+      };
+
     const handleSubmit = () => {
         const personalId = getUserId();
-        const data = { title, description, exercises, personalId };
+        const data = { title, description, exercises, personalId, selectedAluno };
+        
         apiService.postWorkout("workout", data).then((res) => {
             if (res) {
                 fetchWorkouts();
@@ -51,18 +86,18 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
     };
 
     const handleEdit = () => {
-        const data = { title, description, exercises};
+        const data = { title, description, exercises, selectedAluno };
         apiService.editWorkout("workout", workout?.id as number, data).then((res) => {
             if (res) {
                 fetchWorkouts();
             }
         });
         toggleModal();
-        if(setOpen){
+        if (setOpen) {
             setOpen(false);
         }
     };
-    
+
 
     return (
         <>
@@ -126,6 +161,12 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">
+                                    Aluno (Opcional)
+                                </label>
+                                <WorkoutDropdown onChange={handleAlunoChange} listAlunos={alunos} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-white">

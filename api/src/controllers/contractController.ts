@@ -24,15 +24,13 @@ export const createContract = async (req: Request, res: Response) => {
 }
 
 export const deleteContract = async (req: Request, res: Response) => {
-    let data: PrismaClient.ContratoUncheckedCreateInput = { alunoId: req.body.loggedUserId, personalId: req.body.personalId };
-
+    let data: PrismaClient.ContratoUncheckedCreateInput = { alunoId: req.body.loggedUserId, personalId: req.body.personalId, id: req.body.id, status: req.body.status  };
 
     try {
-        if (data.personalId) {   
-            const contract = await contractFunctions.contrato.deleteMany({
+        if (data.personalId) {         
+            const contract = await contractFunctions.contrato.delete({
                 where: {
-                    alunoId: data.alunoId,
-                    personalId: data.personalId
+                    id: data.id
                 },
             });
 
@@ -56,6 +54,39 @@ export const deleteContract = async (req: Request, res: Response) => {
         }
     }
 }
+
+export const editContract = async (req: Request, res: Response) => {
+    const id: number = req.body.id;
+
+    if (!id) {
+        return res.status(400).json({ error: "ID do contrato é obrigatório" });
+    }
+
+    try {
+        console.log("ID recebido:", id);
+
+        const existingContract = await contractFunctions.contrato.findUnique({
+            where: { id }
+        });
+
+        if (!existingContract) {
+            return res.status(404).json({ error: "Contrato não encontrado" });
+        }
+
+        const contract = await contractFunctions.contrato.updateMany({
+            where: { id },
+            data: { status: true },
+        });
+
+        console.log("Contrato atualizado:", contract);
+
+        return res.status(200).json({ contract });
+    } catch (err: any) {
+        console.error("Erro ao atualizar contrato:", err);
+        return res.status(500).json({ error: "Erro interno do servidor" });
+    }
+}
+
 
 
 export const getUserContracts = async (req: Request, res: Response) => {

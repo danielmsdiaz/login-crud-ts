@@ -2,31 +2,20 @@ import apiService from '@/services/contractServices';
 import React, { useEffect, useRef, useState } from 'react';
 import { getUserId } from '@/helpers/jwtUtils';
 
-type Personal = {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    imageUrl: string;
-    specializations: string[];
-    reviews: number;
-    price: string;
-    location?: string;
-};
-
 type ContractModalProps = {
     toggleModal: React.Dispatch<React.SetStateAction<boolean>>;
     alunoId: number;
     refresh: React.Dispatch<React.SetStateAction<boolean>>
+    activeContract: { id: number, status: boolean } | null;
 };
 
-const ContractModal = ({ toggleModal, alunoId, refresh }: ContractModalProps) => {
+const ContractModal = ({ toggleModal, alunoId, refresh, activeContract }: ContractModalProps) => {
     const modalRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(true);
 
     const handleRefuseContract = async () => {
         const personalId = getUserId();
-        const data = { personalId: personalId as number, loggedUserId: alunoId  }
+        const data = { personalId: personalId as number, loggedUserId: alunoId, id: activeContract?.id, status: activeContract?.status }
 
         try {
             const response = await apiService.deleteContract("delete", data);
@@ -40,7 +29,30 @@ const ContractModal = ({ toggleModal, alunoId, refresh }: ContractModalProps) =>
             setTimeout(() => {
                 toggleModal(false);
             }, 300);
-            refresh(true);
+            refresh((prev) => (!prev));
+        }
+        catch (er) {
+            console.log(er);
+        }
+    }
+
+    const handleAcceptContract = async () => {
+        const personalId = getUserId();
+        const data = { personalId: personalId as number, loggedUserId: alunoId, id: activeContract?.id }
+
+        try {
+            const response = await apiService.putContract("put", data);
+
+            if (!response) {
+                return alert("Erro ao aceitar o contrato")
+            }
+
+            alert("Contrato aceito com sucesso")
+            setIsVisible(false);
+            setTimeout(() => {
+                toggleModal(false);
+            }, 300);
+            refresh((prev) => (!prev));
         }
         catch (er) {
             console.log(er);
@@ -116,22 +128,34 @@ const ContractModal = ({ toggleModal, alunoId, refresh }: ContractModalProps) =>
                                 <strong>Preço:</strong> {"personal.price"}
                             </p>
                         </div>
-                        {/* Modal footer */}
-                        <div className="flex items-center justify-center p-6 border-t border-gray-200 rounded-b dark:border-gray-600 space-x-4">
-                            <button
-                                type="button"
-                                className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700"
-                                onClick={handleRefuseContract}
-                            >
-                                Recusar
-                            </button>
-                            <button
-                                type="button"
-                                className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
-                            >
-                                Aceitar
-                            </button>
-                        </div>
+                        {!activeContract?.status ? (
+                            <div className="flex items-center justify-center p-6 border-t border-gray-200 rounded-b dark:border-gray-600 space-x-4">
+                                <button
+                                    type="button"
+                                    className="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700"
+                                    onClick={handleRefuseContract}
+                                >
+                                    Recusar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                                    onClick={handleAcceptContract}
+                                >
+                                    Aceitar
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center p-6 border-t border-gray-200 rounded-b dark:border-gray-600 space-x-4">
+                                <button
+                                    type="button"
+                                    className="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700"
+                                    onClick={handleRefuseContract}
+                                >
+                                    Finalizar Contrato
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

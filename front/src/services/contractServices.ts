@@ -17,6 +17,16 @@ const apiService = {
     }
   },
 
+  putContract: async (endpoint: string, data: ContractType) => {
+    try {
+      const response = await api.put(endpoint, data);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição POST:', error);
+      throw error;
+    }
+  },
+
   deleteContract: async (endpoint: string, data: ContractType) => {
     try {
       const response = await api.delete(endpoint, {

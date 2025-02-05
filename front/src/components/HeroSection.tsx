@@ -5,9 +5,10 @@ import WorkoutModal from './WorkoutModal';
 
 type HeroSectionProps = {
     fetchWorkouts: () => void
+    personalId: number;
 }
 
-const HeroSection = ({fetchWorkouts}: HeroSectionProps) => {
+const HeroSection = ({fetchWorkouts, personalId}: HeroSectionProps) => {
     const [openModal, setOpenModal] = useState<boolean>(false);
     const toggleModal = () => {
         setOpenModal(!openModal);
@@ -35,7 +36,7 @@ const HeroSection = ({fetchWorkouts}: HeroSectionProps) => {
                 </div>
             </div>
             {openModal && (
-                <WorkoutModal fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
+                <WorkoutModal personalId={personalId} fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
             )}
         </>
     )

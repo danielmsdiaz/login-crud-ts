@@ -47,6 +47,16 @@ const apiService = {
     }
   },
 
+  getAlunos: async (endpoint: string, personalId: number) => {
+    try {
+      const response = await api.get(`${endpoint}/${personalId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição GET:', error);
+      throw error;
+    }
+  },
+
 };
 
 export default apiService;
