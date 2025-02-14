@@ -7,6 +7,7 @@ type WorkoutType = {
         reps: string
     }[],
     aluno?:any
+    alunoId?: number
 }
 
 export default WorkoutType;

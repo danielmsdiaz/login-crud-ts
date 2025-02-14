@@ -6,6 +6,7 @@ import WorkoutType from '@/types/Workout'
 import apiService from '@/services/personalServices'
 import { useState } from 'react'
 import WorkoutModal from './WorkoutModal'
+import { UserIcon } from '@heroicons/react/20/solid'
 
 type OverviewProps = {
     open: boolean;
@@ -64,15 +65,19 @@ export default function Overview({ fetchWorkouts, workout, open, setOpen, person
                                 </section>
                                 <section aria-labelledby="exercises-heading" className="mt-6">
                                     <h3 id="exercises-heading" className="text-lg font-semibold text-gray-900">Exercícios</h3>
-                                    <ul className="mt-4 space-y-3">
+                                    <ul className="mt-4 space-y-3 w-1/4 list-disc list-inside text-gray-900">
                                         {workout.exercises.map((exercise, index) => (
-                                            <li key={index} className="flex justify-between text-sm text-gray-900">
-                                                <span>{exercise.name}</span>
-                                                <span>{exercise.reps} reps</span>
+                                            <li key={index} className="text-sm">
+                                                <span>{exercise.name} - {exercise.reps} reps</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </section>
+                                <hr className="my-6 border-gray-200" />
+                                <p className='text-sm flex items-center mt-2 self-start'>
+                                    <UserIcon height={15} className="mr-2 text-indigo-500" />
+                                    {`${workout.aluno.name} ${workout.aluno.lastName}`}
+                                </p>
                                 <hr className="my-6 border-gray-200" />
                                 <div className="flex justify-center space-x-6">
                                     <button

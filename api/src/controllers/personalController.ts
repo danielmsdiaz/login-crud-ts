@@ -129,7 +129,9 @@ export const deleteWorkout = async (req: Request, res: Response) => {
 export const editWorkout = async (req: Request, res: Response) => {
     try {
         const id: number = parseInt(req.params.id);
-        const { title, description, exercises, selectedAluno } = req.body;
+        const { title, description, exercises, aluno } = req.body;
+        console.log(aluno);
+        
 
         const result = await personalFunctions.treino.update({
             where: {
@@ -139,7 +141,7 @@ export const editWorkout = async (req: Request, res: Response) => {
                 title: title,
                 description: description,
                 exercises: exercises,
-                alunoId: selectedAluno
+                alunoId: aluno
             },
         });
 

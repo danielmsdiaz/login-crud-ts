@@ -46,6 +46,7 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
             setTitle(workout.title || '');
             setDescription(workout.description || '');
             setExercises(workout.exercises || [{ name: '', reps: '' }]);
+            setSelectedAluno(workout.alunoId as number);
         }
     }, [workout]);
 
@@ -86,17 +87,39 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
     };
 
     const handleEdit = () => {
-        const data = { title, description, exercises, selectedAluno };
-        apiService.editWorkout("workout", workout?.id as number, data).then((res) => {
+        if (!workout) return;
+    
+        // Criar um objeto com apenas os valores alterados
+        const updatedFields: any = {};
+    
+        if (title !== workout.title) updatedFields.title = title;
+        if (description !== workout.description) updatedFields.description = description;
+        if (selectedAluno !== workout.aluno?.id) updatedFields.aluno = selectedAluno;
+        
+        // Comparar lista de exercícios
+        const exercisesChanged = JSON.stringify(exercises) !== JSON.stringify(workout.exercises);
+        if (exercisesChanged) updatedFields.exercises = exercises;
+    
+        // Só enviar a requisição se houver mudanças
+        if (Object.keys(updatedFields).length === 0) {
+            console.log("Nenhuma alteração detectada.");
+            return;
+        }
+
+        console.log(updatedFields);
+        
+        apiService.editWorkout("workout", workout.id as number, updatedFields).then((res) => {
             if (res) {
                 fetchWorkouts();
             }
         });
+    
         toggleModal();
         if (setOpen) {
             setOpen(false);
         }
     };
+    
 
 
     return (
@@ -166,7 +189,7 @@ const WorkoutModal = ({ fetchWorkouts, toggleModal, isEdit = false, workout = un
                                 <label className="block text-sm font-medium text-gray-700 dark:text-white">
                                     Aluno (Opcional)
                                 </label>
-                                <WorkoutDropdown onChange={handleAlunoChange} listAlunos={alunos} />
+                                <WorkoutDropdown selectedAluno={selectedAluno as number} onChange={handleAlunoChange} listAlunos={alunos} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-white">

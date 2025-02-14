@@ -3,9 +3,10 @@ import React from 'react';
 type DropdownProps = {
   listAlunos: { name: string, id: number | null  }[];
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  selectedAluno: number;
 };
 
-const WorkoutDropdown = ({ listAlunos, onChange }: DropdownProps) => {
+const WorkoutDropdown = ({ listAlunos, onChange, selectedAluno }: DropdownProps) => {
 
   listAlunos = listAlunos.filter((aluno, index) => index !== 0)
 
@@ -15,6 +16,7 @@ const WorkoutDropdown = ({ listAlunos, onChange }: DropdownProps) => {
       name="selectedAluno"
       aria-label="Selecione um aluno"
       onChange={onChange}
+      value={selectedAluno}
     >
       <option value="" disabled selected>Selecione um aluno</option>
       {listAlunos.map((aluno) => (
