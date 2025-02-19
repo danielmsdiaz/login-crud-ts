@@ -12,6 +12,24 @@ import Overview from '@/components/WorkoutOverview';
 import { UserIcon, MagnifyingGlassIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 
 export default function Workouts() {
+
+  useEffect(() => {
+    const updateLimit = () => {
+      if (window.innerWidth > 1200) {
+        setLimit(11);
+      } else if (window.innerWidth > 800) {
+        setLimit(5);
+      } else {
+        setLimit(2);
+      }
+    };
+
+    updateLimit(); // Definir o limite inicial
+    window.addEventListener("resize", updateLimit);
+
+    return () => window.removeEventListener("resize", updateLimit);
+  }, []);
+
   const personalId = getUserId();
   const [workouts, setWorkouts] = useState<WorkoutType[]>([]);
   const [workout, setWorkout] = useState<WorkoutType>();
@@ -23,6 +41,7 @@ export default function Workouts() {
   const [aluno, setAluno] = useState<number>();
   const [filteredWord, setFilteredWord] = useState<string>("");
   const [filteredWorkouts, setfilteredWorkouts] = useState<WorkoutType[]>([])
+  const [limit, setLimit] = useState<number>(1);
 
   const toggleModal = () => {
     setOpenModal(!openModal);
@@ -57,6 +76,19 @@ export default function Workouts() {
       setfilteredWorkouts(filtered);
     }
   }
+
+  const handleLimitBtn = () => {
+    let increment;
+    if (window.innerWidth > 1200) {
+      increment = 3;
+    } else if (window.innerWidth > 800) {
+      increment = 2;
+    } else {
+      increment = 1;
+    }
+
+    setLimit((prevLimit) => Math.min(prevLimit + increment, filteredWorkouts.length ? filteredWorkouts.length : noRecord ? [].length : workouts.length));
+  };
 
   const handleRefreshBtn = () => {
     setFilteredWord("");
@@ -116,7 +148,7 @@ export default function Workouts() {
                       <option value={0}>Ativo</option>
                       <option value={1}>Concluido</option>
                     </select>
-                    <section className='w-[500px] hidden xl:flex'>
+                    <section className='w-[500px] hidden md:flex'>
                       <div className="relative w-full">
                         <MagnifyingGlassIcon height={25} className="absolute left-2 top-1/2 -translate-y-1/2 text-indigo-500" />
                         <input
@@ -129,6 +161,11 @@ export default function Workouts() {
                         <button onClick={handleBtnSubmit} className='absolute bg-indigo-700/80 top-[10px] right-3 text-white rounded-md px-4 py-1'>Buscar</button>
                       </div>
                     </section>
+                    <section className='flex items-center md:hidden'>
+                      <div onClick={handleBtnSubmit} className="bg-indigo-700/80 text-white rounded-md p-2 flex items-center cursor-pointer">
+                        Buscar
+                      </div>
+                    </section>
                     <section className='flex items-center'>
                       <div onClick={handleRefreshBtn} className="bg-indigo-700/80 text-white rounded-md p-2 flex items-center cursor-pointer">
                         <ArrowPathIcon height={25} className="text-white" />
@@ -136,38 +173,44 @@ export default function Workouts() {
                     </section>
                   </section>
                 </div>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                  {(filteredWorkouts.length ? filteredWorkouts : noRecord ? [] : workouts).map((workout) => (
-                    <div onClick={() => { toggleOverview(workout) }} key={workout.id} className="group bg-gray-100 rounded-lg p-4 max-h-[200px] min-h-[168px] flex flex-col justify-between">
-                      <div>
-                        <h3 className="text-sm font-medium text-gray-700 capitalize mb-2">{workout.title}</h3>
-                        <p className="mt-2 text-sm text-gray-700 font-medium">Exercícios:</p>
-                        <ul className="list-disc list-inside text-sm text-gray-500 max-h-[120px] overflow-hidden">
-                          {workout.exercises.slice(0, 2).map((exercise, index) => (
-                            <li key={index} className="text-ellipsis">{exercise.name} - {exercise.reps} repetições</li>
-                          ))}
-                          {workout.exercises.length > 2 && (
-                            <li className="text-ellipsis text-gray-500">... e mais</li>
-                          )}
-                        </ul>
-                      </div>
+                <div>
+                  <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                    {(filteredWorkouts.length ? filteredWorkouts.slice(0, limit) : noRecord ? [] : workouts.slice(0, limit)).map((workout) => (
+                      <div onClick={() => { toggleOverview(workout) }} key={workout.id} className="group bg-gray-100 rounded-lg p-4 max-h-[200px] min-h-[168px] flex flex-col justify-between">
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-700 capitalize mb-2">{workout.title}</h3>
+                          <p className="mt-2 text-sm text-gray-700 font-medium">Exercícios:</p>
+                          <ul className="list-disc list-inside text-sm text-gray-500 max-h-[120px] overflow-hidden">
+                            {workout.exercises.slice(0, 2).map((exercise, index) => (
+                              <li key={index} className="text-ellipsis">{exercise.name} - {exercise.reps} repetições</li>
+                            ))}
+                            {workout.exercises.length > 2 && (
+                              <li className="text-ellipsis text-gray-500">... e mais</li>
+                            )}
+                          </ul>
+                        </div>
 
-                      <p className='text-sm flex items-center mt-2 self-start'>
-                        <UserIcon height={15} className="mr-2 text-indigo-500" />
-                        {`${workout.aluno.name} ${workout.aluno.lastName}`}
-                      </p>
+                        <p className='text-sm flex items-center mt-2 self-start'>
+                          <UserIcon height={15} className="mr-2 text-indigo-500" />
+                          {`${workout.aluno.name} ${workout.aluno.lastName}`}
+                        </p>
+                      </div>
+                    ))}
+
+                    {workout && (
+                      <Overview personalId={personalId as number} fetchWorkouts={fetchWorkouts} workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
+                    )}
+                    {/* Card para criar um novo treino */}
+                    <div onClick={toggleModal} className="group bg-gray-100 p-4 rounded-lg flex items-center justify-center min-h-[168px] cursor-pointer">
+                      <button className="text-sm font-medium text-indigo-700">Criar Novo Treino</button>
                     </div>
-                  ))}
-                  {workout && (
-                    <Overview personalId={personalId as number} fetchWorkouts={fetchWorkouts} workout={workout as WorkoutType} open={openOverview} setOpen={setOpenOverview} />
-                  )}
-                  {/* Card para criar um novo treino */}
-                  <div className="group bg-gray-100 p-4 rounded-lg flex items-center justify-center min-h-[168px]">
-                    <button onClick={toggleModal} className="text-sm font-medium text-indigo-700">Criar Novo Treino</button>
+                    {openModal && (
+                      <WorkoutModal personalId={personalId as number} fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
+                    )}
                   </div>
-                  {openModal && (
-                    <WorkoutModal personalId={personalId as number} fetchWorkouts={fetchWorkouts} toggleModal={toggleModal} />
-                  )}
+                  <button disabled={limit >= (filteredWorkouts.length ? filteredWorkouts.length : noRecord ? [].length : workouts.length)} onClick={handleLimitBtn} className='rounded-md mt-5 w-3/4 mx-auto bg-indigo-700 flex items-center justify-center py-3 text-white shadow-md hover:bg-indigo-700/95 transition-all disabled:hover:bg-indigo-700'>
+                    Ver mais
+                  </button>
                 </div>
               </>
             ) : (
