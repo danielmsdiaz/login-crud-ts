@@ -27,7 +27,7 @@ const Login = () => {
         }
         
         login(res.token);
-        router.push("/dashboard")
+        router.push("/aluno/dashboard")
     }
 
     useEffect(() => {
