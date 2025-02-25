@@ -24,10 +24,10 @@ export const createContract = async (req: Request, res: Response) => {
 }
 
 export const deleteContract = async (req: Request, res: Response) => {
-    let data: PrismaClient.ContratoUncheckedCreateInput = { alunoId: req.body.loggedUserId, personalId: req.body.personalId, id: req.body.id, status: req.body.status  };
+    let data: PrismaClient.ContratoUncheckedCreateInput = { alunoId: req.body.loggedUserId, personalId: req.body.personalId, id: req.body.id, status: req.body.status };
 
     try {
-        if (data.personalId) {         
+        if (data.personalId) {
             const contract = await contractFunctions.contrato.delete({
                 where: {
                     id: data.id
@@ -110,6 +110,15 @@ export const getUserContracts = async (req: Request, res: Response) => {
             where: {
                 personalId: id
             },
+            include: {
+                aluno: {
+                    select: {
+                        name: true,
+                        lastName: true,
+                        email: true,
+                    }
+                }
+            }
         })
 
         if (contracts) {

@@ -1,6 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getUserId } from '@/helpers/jwtUtils';
+import apiService from '@/services/contractServices'
 
 const AlunosCards = () => {
+    const [contracts, setContracts] = useState<any[]>();
+
+    const fetchAlunos = async () => {
+        try {
+            const personalId = getUserId();
+            const data = await apiService.getContracts("get", 1, personalId as number); 
+
+            if (Array.isArray(data)) {
+                setContracts(data);
+            } else {
+                console.error("Dados inesperados:", data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar contratos:", error);
+        } finally {
+            //setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAlunos();
+      }, []);
+
     return (
         <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
@@ -8,17 +33,17 @@ const AlunosCards = () => {
             </div>
             <div className="flow-root">
                 <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {["Neil", "Patrick", "Lucas", "Teste", "ASDAS"].map((aluno, index) => (
+                    {contracts?.map((contract, index) => (
                         <li key={index} className="py-3 sm:py-4">
                             <div className="flex items-center">
                                 <div className="shrink-0">
                                 </div>
                                 <div className="flex-1 min-w-0 ms-4">
                                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                        {aluno}
+                                        {`${contract.aluno.name} ${contract.aluno.lastName}`}
                                     </p>
                                     <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                                        email@windster.com
+                                        {contract.aluno.email}
                                     </p>
                                 </div>
                                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
