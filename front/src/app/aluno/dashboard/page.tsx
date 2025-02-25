@@ -16,11 +16,11 @@ export default function Dashboard() {
         <main>
           <div className="mx-auto max-w-7xl px-4 xl:py-6 sm:px-6 lg:px-8 pb-5">
             <div className="md:grid md:grid-cols-[1fr_1.7fr] items-start gap-x-6">
-              <div className='flex flex-col items-center'>
+              <div className='flex flex-col items-center md:items-start'>
                 <PersonalCard />
-                <button className='bg-indigo-700 text-white w-[343px] md:w-[384px] rounded-lg py-3 m-4 hover:bg-indigo-700/90'>Finalizar Contrato</button>
+                <button className='bg-indigo-700 text-white w-[343px] md:w-[384px] rounded-lg py-3 mt-4 hover:bg-indigo-700/90'>Finalizar Contrato</button>
               </div>
-              <div className="flex flex-col gap-y-4">
+              <div className="flex flex-col gap-y-4 mt-4 md:mt-0">
                 <div className="flex gap-x-4">
                   <Card className='flex-1' status='finished' title="Treinos Finalizados" subtitle="20" description="Treinos finalizados nos ultimos 30 dias" />
                   <Card className='flex-1' status='lost' title="Treinos Perdidos" subtitle="10" description="Treinos perdidos nos ultimos 30 dias" />

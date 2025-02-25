@@ -25,9 +25,11 @@ const Login = () => {
             setShowAlert(true);
             return;
         }
-        
+
+        console.log(res);
+    
         login(res.token);
-        router.push("/aluno/dashboard")
+        res.type == 0 ? router.push("/aluno/dashboard") : router.push("/personal/dashboard") 
     }
 
     useEffect(() => {

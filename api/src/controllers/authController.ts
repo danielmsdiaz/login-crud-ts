@@ -25,7 +25,7 @@ export const login = async (req: Request, res: Response) => {
 
         const token = jwt.sign({id: user.id, type: user.type, email: user.email, name: user.name}, SECRET as string);
         
-        res.json({"token": token, "message": "Usuário logado com sucesso!"})
+        res.json({"token": token, "message": "Usuário logado com sucesso!", "type": user.type});
     }
     catch (err: any) {
         res.send(err.message);
