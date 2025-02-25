@@ -135,3 +135,65 @@ export const getUserContracts = async (req: Request, res: Response) => {
         }
     }
 }
+
+export const getActiveContracts = async (req: Request, res: Response) => {
+    try {
+        const id: number = parseInt(req.params.id);
+        const status: boolean = req.params.status === "1" ? true : false
+        const type: number = parseInt(req.params.type);
+
+        if (type === 0) {
+            const contracts = await contractFunctions.contrato.findFirst({
+                where: {
+                    alunoId: id,
+                    status: status,
+                },
+                include: {
+                    personal: {
+                        select: {
+                            name: true,
+                            lastName: true,
+                            email: true,
+                            bio: true,
+                            cargo: true,
+
+                        }
+                    }
+                }
+            })
+
+            if (contracts) {
+                return res.send(contracts);
+            }
+        }
+
+        const contracts = await contractFunctions.contrato.findMany({
+            where: {
+                personalId: id,
+                status: status
+            },
+            include: {
+                aluno: {
+                    select: {
+                        name: true,
+                        lastName: true,
+                        email: true,
+                    }
+                }
+            }
+        })
+
+        if (contracts) {
+            return res.send(contracts);
+        }
+
+    }
+    catch (err: any) {
+        if (err instanceof z.ZodError) {
+            res.send(err.issues[0].message);
+        }
+        else {
+            res.send(err.message)
+        }
+    }
+}

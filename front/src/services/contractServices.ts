@@ -48,6 +48,17 @@ const apiService = {
       throw error;
     }
   },
+
+  getActiveContracts: async (endpoint: string, type: number, userId: number) => {
+    try {
+      const response = await api.get(`${endpoint}/${type}/${userId}/1`);
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao fazer requisição GET:', error);
+      throw error;
+    }
+  },
+
 };
 
 export default apiService;
